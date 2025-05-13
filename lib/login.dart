@@ -33,9 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginUser() async {
-    final url = Uri.parse(
-      'https://10.0.2.2:7195/api/auth/login',
-    ); // Use your IP if real device
+    final url = Uri.parse('http://10.0.2.2:5078/api/auth/login');
+    // Use your IP if real device
 
     try {
       final response = await http.post(
