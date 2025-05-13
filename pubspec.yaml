@@ -1,0 +1,30 @@
+name: flutter_bookreader
+description: "A new Flutter project."
+
+# Prevent accidental publishing
+publish_to: "none"
+
+# App version
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.6
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_lints: ^3.0.1
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  # Include app assets (logo)
+  assets:
+    - assets/images/logo.png
+
+  # Use Material Icons
+  uses-material-design: true
