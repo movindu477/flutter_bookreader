@@ -17,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController(); // Optional
   final _passwordController = TextEditingController();
-
   String? _errorMessage;
 
   void _togglePasswordVisibility() {
@@ -29,12 +28,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    HttpOverrides.global = MyHttpOverrides(); // For localhost HTTPS
+    HttpOverrides.global =
+        MyHttpOverrides(); // Ignore SSL cert warning for local dev
   }
 
   Future<void> _loginUser() async {
     final url = Uri.parse('http://10.0.2.2:5078/api/auth/login');
-    // Use your IP if real device
+
+    // Update if using real device
 
     try {
       final response = await http.post(
@@ -45,21 +46,26 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       );
 
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && data['status'] == 'success') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const AppDashboard()),
-        );
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == 'success') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const AppDashboard()),
+          );
+        } else {
+          setState(() {
+            _errorMessage = data['message'] ?? 'Login failed';
+          });
+        }
       } else {
         setState(() {
-          _errorMessage = data['message'] ?? 'Login failed';
+          _errorMessage = 'Invalid server response (${response.statusCode})';
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error: $e';
+        _errorMessage = 'Error: ${e.toString()}';
       });
     }
   }
@@ -208,7 +214,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 20),
 
-                      // Error message
                       if (_errorMessage != null)
                         Text(
                           _errorMessage!,
@@ -217,7 +222,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 10),
 
-                      // Create account link
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -247,12 +251,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Bypass certificate validation for localhost (testing only!)
+// Accept self-signed certificates for localhost
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (cert, host, port) => true;
   }
 }
