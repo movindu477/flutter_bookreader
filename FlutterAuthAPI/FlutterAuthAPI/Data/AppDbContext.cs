@@ -12,5 +12,6 @@ namespace FlutterAuthAPI.Data
 		public DbSet<Fiction> Fiction { get; set; }
 		public DbSet<User> Users { get; set; }
 		public DbSet<NonFiction> NonFiction { get; set; }
+		public DbSet<AcademicBook> AcademicBooks { get; set; }
 	}
 }

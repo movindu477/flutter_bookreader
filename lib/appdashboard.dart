@@ -12,12 +12,14 @@ class AppDashboard extends StatefulWidget {
 class _AppDashboardState extends State<AppDashboard> {
   List<dynamic> fictionBooks = [];
   List<dynamic> nonFictionBooks = [];
+  List<dynamic> academicBooks = [];
 
   @override
   void initState() {
     super.initState();
     fetchFictionBooks();
     fetchNonFictionBooks();
+    fetchAcademicBooks();
   }
 
   Future<void> fetchFictionBooks() async {
@@ -49,6 +51,22 @@ class _AppDashboardState extends State<AppDashboard> {
       }
     } catch (e) {
       print("Error fetching non-fiction books: $e");
+    }
+  }
+
+  Future<void> fetchAcademicBooks() async {
+    final url = Uri.parse('http://10.0.2.2:5078/api/academicbooks');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        setState(() {
+          academicBooks = jsonDecode(response.body);
+        });
+      } else {
+        print("Failed to load academic books: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching academic books: $e");
     }
   }
 
@@ -159,11 +177,31 @@ class _AppDashboardState extends State<AppDashboard> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 20, bottom: 20),
+            padding: const EdgeInsets.only(left: 20, bottom: 10),
             child:
                 nonFictionBooks.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : buildBookRow(nonFictionBooks),
+          ),
+
+          // Academic Section
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Text(
+              'Academic & Education',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, bottom: 30),
+            child:
+                academicBooks.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : buildBookRow(academicBooks),
           ),
         ],
       ),
