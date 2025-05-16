@@ -31,9 +31,8 @@ class _NewAccountScreenState extends State<NewAccountScreen> {
   }
 
   Future<void> _registerUser() async {
-    final url = Uri.parse(
-      'https://10.0.2.2:7195/api/auth/register',
-    ); // Adjust IP if on device
+    final url = Uri.parse('http://10.0.2.2:5078/api/auth/register');
+    // Adjust IP if on device
 
     try {
       final response = await http.post(

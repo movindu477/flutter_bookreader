@@ -13,6 +13,7 @@ class _AppDashboardState extends State<AppDashboard> {
   List<dynamic> fictionBooks = [];
   List<dynamic> nonFictionBooks = [];
   List<dynamic> academicBooks = [];
+  List<dynamic> comicsBooks = []; // New list for Comics & Graphic Novels
 
   @override
   void initState() {
@@ -20,6 +21,7 @@ class _AppDashboardState extends State<AppDashboard> {
     fetchFictionBooks();
     fetchNonFictionBooks();
     fetchAcademicBooks();
+    fetchComicsBooks(); // Fetch comics data
   }
 
   Future<void> fetchFictionBooks() async {
@@ -67,6 +69,24 @@ class _AppDashboardState extends State<AppDashboard> {
       }
     } catch (e) {
       print("Error fetching academic books: $e");
+    }
+  }
+
+  Future<void> fetchComicsBooks() async {
+    final url = Uri.parse(
+      'http://10.0.2.2:5078/api/comics',
+    ); // Make sure this endpoint exists
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        setState(() {
+          comicsBooks = jsonDecode(response.body);
+        });
+      } else {
+        print("Failed to load comics books: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching comics books: $e");
     }
   }
 
@@ -202,6 +222,26 @@ class _AppDashboardState extends State<AppDashboard> {
                 academicBooks.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : buildBookRow(academicBooks),
+          ),
+
+          // Comics & Graphic Novels Section
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Text(
+              'Comics & Graphic Novels',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, bottom: 30),
+            child:
+                comicsBooks.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : buildBookRow(comicsBooks),
           ),
         ],
       ),
