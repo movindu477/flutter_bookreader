@@ -51,7 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
         if (data['status'] == 'success') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const AppDashboard()),
+            MaterialPageRoute(
+              builder:
+                  (context) =>
+                      AppDashboard(username: _usernameController.text.trim()),
+            ),
           );
         } else {
           setState(() {
