@@ -1,10 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace FlutterAuthAPI.Models
 {
     public class ComicBook
     {
+        [Key]
         public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
+        public string BookName { get; set; } = string.Empty;
         public string Author { get; set; } = string.Empty;
-        public string ImageUrl { get; set; } = string.Empty;
+        public byte[] ImageData { get; set; } = Array.Empty<byte>();
     }
 }

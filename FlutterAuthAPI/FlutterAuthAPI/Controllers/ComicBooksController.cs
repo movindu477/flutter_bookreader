@@ -1,34 +1,43 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // ✅ Required for ToListAsync
+using FlutterAuthAPI.Data;
 using FlutterAuthAPI.Models;
 
-namespace YourAspNetProject.Controllers
+namespace FlutterAuthAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ComicBooksController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult<List<ComicBook>> Get()
-        {
-            var books = new List<ComicBook>
-            {
-                new ComicBook
-                {
-                    Id = 1,
-                    Title = "Watchmen",
-                    Author = "Alan Moore & Dave Gibbons",
-                    ImageUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASw..."
-                },
-                new ComicBook
-                {
-                    Id = 2,
-                    Title = "Maus: A Survivor’s Tale",
-                    Author = "Art Spiegelman",
-                    ImageUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASw..."
-                }
-            };
+        private readonly AppDbContext _context;
 
-            return Ok(books);
+        public ComicBooksController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<ComicBook>>> Get()
+        {
+            try
+            {
+                var booksFromDb = await _context.ComicBooks.ToListAsync();
+
+                if (booksFromDb == null || !booksFromDb.Any())
+                {
+                    return NotFound(new { message = "No comic books found." });
+                }
+
+                return Ok(booksFromDb);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = "Error retrieving data",
+                    error = ex.Message
+                });
+            }
         }
     }
 }
