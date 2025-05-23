@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FlutterAuthAPI.Data;
 using FlutterAuthAPI.Models;
+using System.Text; // Required for Convert.ToBase64String
 
 namespace FlutterAuthAPI.Controllers
 {
