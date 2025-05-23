@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // ✅ Required for ToListAsync
+using Microsoft.EntityFrameworkCore;
 using FlutterAuthAPI.Data;
 using FlutterAuthAPI.Models;
 
@@ -17,7 +17,7 @@ namespace FlutterAuthAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ComicBook>>> Get()
+        public async Task<ActionResult<List<ComicBookDto>>> Get()
         {
             try
             {
@@ -28,7 +28,15 @@ namespace FlutterAuthAPI.Controllers
                     return NotFound(new { message = "No comic books found." });
                 }
 
-                return Ok(booksFromDb);
+                var bookDtos = booksFromDb.Select(book => new ComicBookDto
+                {
+                    Id = book.Id,
+                    Title = book.BookName,
+                    Author = book.Author,
+                    ImageUrl = $"data:image/png;base64,{Convert.ToBase64String(book.ImageData)}"
+                }).ToList();
+
+                return Ok(bookDtos);
             }
             catch (Exception ex)
             {
